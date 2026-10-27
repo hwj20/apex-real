@@ -93,11 +93,6 @@ p{margin:0}
 .flow li::before{content:counter(step);font-family:var(--mono);font-size:12px;color:var(--muted)}
 .flow li.arrow{border:0;background:none;padding:0;color:var(--muted);counter-increment:none}
 .flow li.arrow::before{content:none}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:28px}
-@media (max-width:760px){.two{grid-template-columns:1fr}}
-.notes{margin:0;padding-left:18px;color:var(--ink)}
-.notes li{margin-bottom:6px}
-.notes li::marker{color:var(--muted)}
 
 /* paper */
 pre{margin:0;padding:14px 16px;background:var(--panel);border:1px solid var(--line);border-radius:8px;font-family:var(--mono);font-size:13px;line-height:1.5;overflow-x:auto;white-space:pre}
@@ -112,9 +107,9 @@ footer{padding-block:36px 48px;border-top:1px solid var(--line);color:var(--mute
 <nav class="nav" aria-label="Sections">
   <div class="wrap">
     <a class="brand" href="#top">APEX on a Real Robot</a>
+    <a href="#sim">Simulation</a>
     <a href="#knife">Knife</a>
     <a href="#edge">Table edge</a>
-    <a href="#sim">Simulation</a>
     <a href="#pick">Pick &amp; place</a>
     <a href="#how">How it works</a>
     <a href="#paper">Paper</a>
@@ -132,7 +127,7 @@ footer{padding-block:36px 48px;border-top:1px solid var(--line);color:var(--mute
       <span>UC Santa Barbara, advised by Prof. Ambuj Singh</span>
     </div>
     <div class="links">
-      <a class="btn primary" href="#knife">
+      <a class="btn primary" href="#sim">
         <svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg>Watch the demos
       </a>
       <a class="btn" href="https://arxiv.org/abs/2505.13921">
@@ -154,12 +149,39 @@ footer{padding-block:36px 48px;border-top:1px solid var(--line);color:var(--mute
     </div>
   </section>
 
-  <!-- 1. knife -->
+  <!-- 1. simulation -->
+  <section class="demo" id="sim">
+    <header>
+      <span class="tag sim">Simulation · demo 1</span>
+      <h2>Four scenarios, with and without APEX, side by side.</h2>
+      <p class="sum">Before the real robot, the loop in simulation. Each scenario runs twice: with APEX on the left, and on the right with the arm never moving. A knife from the right, a knife from the front at an angle, the duck pushed toward the edge, and a control case where the duck is flicked and stops on its own, so the right move is to do nothing. Every scenario gave the same outcome in 6 of 6 runs.</p>
+    </header>
+    <div class="player" style="--ar:1706/874">
+      <video controls playsinline preload="metadata" poster="media/posters/sim_20.jpg">
+        <source src="media/SO101_fig1_APEX_simulation_four_scenarios.mp4" type="video/mp4">
+        Your browser can't play this video. <a href="media/SO101_fig1_APEX_simulation_four_scenarios.mp4">Download it</a> instead.
+      </video>
+    </div>
+    <p class="cap"><span>MuJoCo render for display. Qwen3-VL-8B is called for real at each decision.</span><span><code>43.2 s</code></span></p>
+    <ul class="facts">
+      <li><b>A.</b> Knife from the right at 5 cm/s: hit forecast at 2.35 s, gripper down at 4.7 s. Without APEX the duck is hit at 5.7 s.</li>
+      <li><b>B.</b> Knife from the front, 32° off axis, 8 cm/s: gripper down at 5.2 s. Without APEX, hit at 6.6 s.</li>
+      <li><b>C.</b> Duck pushed toward the edge at 4 cm/s: fall forecast at 3.1 s, gripper drops at 3.6 s. Without APEX the duck falls at 6.9 s.</li>
+      <li><b>D.</b> Duck flicked, stops by itself 7.5 cm from the edge: APEX never lowers the gripper.</li>
+      <li>Per decision: about 85 reachable block points scored by the physics model, the best 5 shown to Qwen3-VL-8B, one picked in ~45 ms, then checked against the arm's real path.</li>
+    </ul>
+    <figure class="fig">
+      <a href="media/1_sim_en.png" target="_blank" rel="noopener"><img src="media/1_sim_en.png" alt="Four simulated scenarios shown with and without APEX, plus an inside view of the forecast at 3 seconds" loading="lazy" width="1800" height="4059"></a>
+      <figcaption class="cap"><span>All four scenarios and a look inside the forecast. Click to open at full size.</span></figcaption>
+    </figure>
+  </section>
+
+  <!-- 2. knife -->
   <section class="demo" id="knife">
     <header>
-      <span class="tag real">Real robot · demo 1</span>
+      <span class="tag real">Real robot · demo 2</span>
       <h2>A knife is pushed at the duck. The arm gets in its way in time.</h2>
-      <p class="sum">A person slowly pushes a kitchen knife toward a rubber duck. APEX predicts the hit 3.8 s ahead and lowers its gripper into the knife's predicted path about 2 s before the predicted hit. The gripper holds there until the video ends; the knife slows beside it and the duck is never touched.</p>
+      <p class="sum">The same loop on the real arm. A person slowly pushes a kitchen knife toward a rubber duck. APEX predicts the hit 3.8 s ahead and lowers its gripper into the knife's predicted path about 2 s before the predicted hit. The gripper holds there until the video ends; the knife slows beside it and the duck is never touched.</p>
     </header>
     <div class="player" style="--ar:1706/840">
       <video controls playsinline preload="metadata" poster="media/posters/knife_13.jpg">
@@ -180,10 +202,10 @@ footer{padding-block:36px 48px;border-top:1px solid var(--line);color:var(--mute
     </figure>
   </section>
 
-  <!-- 2. edge -->
+  <!-- 3. edge -->
   <section class="demo" id="edge">
     <header>
-      <span class="tag real">Real robot · demo 2</span>
+      <span class="tag real">Real robot · demo 3</span>
       <h2>The duck is pushed toward the table edge. The arm stops it falling.</h2>
       <p class="sum">Someone pushes the duck toward the edge with a pen. The physics model predicts a fall in about 7 s; in under 1 s the arm lowers its gripper between the duck and the edge, and keeps it there until 2.5 s after APEX sees the pushing stop. The duck moves about 5 cm in all and never falls.</p>
     </header>
@@ -203,33 +225,6 @@ footer{padding-block:36px 48px;border-top:1px solid var(--line);color:var(--mute
     <figure class="fig">
       <a href="media/3_cliff_en.png" target="_blank" rel="noopener"><img src="media/3_cliff_en.png" alt="Six annotated frames of the table-edge demo, from standby to the duck still on the table" loading="lazy" width="1800" height="2467"></a>
       <figcaption class="cap"><span>Storyboard of the same run. Click to open at full size.</span></figcaption>
-    </figure>
-  </section>
-
-  <!-- 3. simulation -->
-  <section class="demo" id="sim">
-    <header>
-      <span class="tag sim">Simulation · demo 3</span>
-      <h2>Four scenarios, with and without APEX, side by side.</h2>
-      <p class="sum">Each scenario runs twice: with APEX on the left, and on the right with the arm never moving. A knife from the right, a knife from the front at an angle, the duck pushed toward the edge, and a control case where the duck is flicked and stops on its own, so the right move is to do nothing. Every scenario gave the same outcome in 6 of 6 runs.</p>
-    </header>
-    <div class="player" style="--ar:1706/874">
-      <video controls playsinline preload="metadata" poster="media/posters/sim_20.jpg">
-        <source src="media/SO101_fig1_APEX_simulation_four_scenarios.mp4" type="video/mp4">
-        Your browser can't play this video. <a href="media/SO101_fig1_APEX_simulation_four_scenarios.mp4">Download it</a> instead.
-      </video>
-    </div>
-    <p class="cap"><span>MuJoCo render for display. Qwen3-VL-8B is called for real at each decision.</span><span><code>43.2 s</code></span></p>
-    <ul class="facts">
-      <li><b>A.</b> Knife from the right at 5 cm/s: hit forecast at 2.35 s, gripper down at 4.7 s. Without APEX the duck is hit at 5.7 s.</li>
-      <li><b>B.</b> Knife from the front, 32° off axis, 8 cm/s: gripper down at 5.2 s. Without APEX, hit at 6.6 s.</li>
-      <li><b>C.</b> Duck pushed toward the edge at 4 cm/s: fall forecast at 3.1 s, gripper drops at 3.6 s. Without APEX the duck falls at 6.9 s.</li>
-      <li><b>D.</b> Duck flicked, stops by itself 7.5 cm from the edge: APEX never lowers the gripper. Correct, but see the notes below.</li>
-      <li>Per decision: about 85 reachable block points scored by the physics model, the best 5 shown to Qwen3-VL-8B, one picked in ~45 ms, then checked against the arm's real path.</li>
-    </ul>
-    <figure class="fig">
-      <a href="media/1_sim_en.png" target="_blank" rel="noopener"><img src="media/1_sim_en.png" alt="Four simulated scenarios shown with and without APEX, plus an inside view of the forecast at 3 seconds" loading="lazy" width="1800" height="4059"></a>
-      <figcaption class="cap"><span>All four scenarios and a look inside the forecast. Click to open at full size.</span></figcaption>
     </figure>
   </section>
 
@@ -271,21 +266,9 @@ footer{padding-block:36px 48px;border-top:1px solid var(--line);color:var(--mute
       <li>Move in and hold while the threat lasts</li><li class="arrow">→</li>
       <li>Lift 2.5 s after it ends</li>
     </ol>
-    <div class="two">
-      <div>
-        <h3>What is the same in sim and on the robot</h3>
-        <p>The forecast, the block-point search, the VLM choice and the real-path check are one code path. The simulation swaps in a MuJoCo world and partly synthetic perception: a generated overhead image, duck found by colour, knife from ground truth, no wrist camera, occlusion or servo error.</p>
-      </div>
-      <div>
-        <h3>Honest notes</h3>
-        <ul class="notes">
-          <li>Scenario A is a close call: the gripper only just catches the knife. An earlier, unsaved batch missed 1 of 8.</li>
-          <li>Scenario C relies on the arm waiting 10 cm toward the edge; at 6 cm the duck fell 4 of 4 times.</li>
-          <li>Scenario D is not purely a correct call: for two frames after the duck stopped, a lagging (~0.2 s) speed estimate still forecast a fall. APEX didn't block only because no block point was reachable in time.</li>
-          <li>On the real robot the knife is pushed by hand at no more than about 4 cm/s. The arm, not the model, is the slow part: lift, swing across and lower takes 2.1 to 2.4 s in simulation.</li>
-          <li>In the simulation the world runs the same physics model APEX predicts with, so model error cannot show up there. It can, and does, on the real robot.</li>
-        </ul>
-      </div>
+    <div>
+      <h3>What is the same in sim and on the robot</h3>
+      <p class="sum">The forecast, the block-point search, the VLM choice and the real-path check are one code path. The simulation swaps in a MuJoCo world and partly synthetic perception: a generated overhead image, duck found by colour, knife from ground truth, no wrist camera, occlusion or servo error.</p>
     </div>
   </section>
 
