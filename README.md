@@ -43,4 +43,4 @@ The real-robot work extends APEX:
 
 ## Contact
 
-Wanjing Huang, UC Santa Barbara · wanjinghuang0310@gmail.com
+Wanjing Huang, UC Santa Barbara · wanjinghuang@ucsb.edu
